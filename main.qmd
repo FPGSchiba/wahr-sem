@@ -5,9 +5,15 @@ format: pdf
 editor: visual
 ---
 
-## Quarto
+## Einleitung
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Wie viel Abfall entsteht nach einem Stadtfest? (unentsorgt und entsorgt)
+
+Anzahl Personen: Poisson
+
+Wetter: Binomial
+
+Alter: Normal
 
 ## Running Code
 
