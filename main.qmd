@@ -35,8 +35,6 @@ Unfall / Verhaftung -\> Gian
 
 ## Simulation
 
-### Statisch
-
 ```{r}
 #| echo: false
 wetter_probs <- c(2/3, 1/3)
