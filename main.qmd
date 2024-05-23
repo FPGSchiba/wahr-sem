@@ -41,7 +41,7 @@ Unfall / Verhaftung -\> Gian
 
 ## Simulation
 
-### Statisch
+
 
 ### Experiment
 
