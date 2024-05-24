@@ -2,10 +2,12 @@
 title: "Semester Arbeit: Schweizer Abstimmungen"
 author: "Bratschi Jonas, Erhardt Jann, Gamper Gian"
 format: pdf
-editor: visual
+editor: visual  
 ---
 
 ## Einleitung
+
+TBD: 
 
 Wie viel Abfall entsteht nach einem Stadtfest? (unentsorgt und entsorgt)
 
@@ -17,7 +19,9 @@ Wetter: Binomial
 
 Alter: Normal
 
-## Überlegungen
+## Beschreibung
+
+TBD: 
 
 Zeit-Slots: 2 am Freitag, 3 am Samstag, 2 am Sonntag
 
@@ -39,14 +43,14 @@ Trinken: Lognormal in abhängigkeit zum Zeit-Slot
 
 Unfall / Verhaftung -\> Gian
 
-## Simulation
+## Ergebnis
 
-### Experiment
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+TBD:
 
 ```{r}
+#| label: simulation
 #| echo: false
+#| warning: false
 # Load required libraries
 library(ggplot2)
 library(tidyr)
@@ -89,7 +93,6 @@ for (i in 1:nsim) {
                          runif(1, min = rest_slots[1], max = rest_slots[2]) * anzahl_personen)
   
   besucher_pro_slot <- round(besucher_pro_slot)
-  #print(sum(besucher_pro_slot))
   
   abfall_pro_slot <- c()
   current_time <- 2
@@ -126,14 +129,18 @@ ggplot(df, aes(x=rowSums(M))) +
   theme_minimal() +
   ylab("Frequenz")
 
-(mean(rowSums(M)))
+calculated_mean <- mean(rowSums(M))
 ```
 
 You can add options to executable code like this
 
-```{r}
+Mean: `{r} calculated_mean`
+
+## Diskussion
+TBD: 
+
+## Fazit
+TBD: 
 
 
-```
 
-The `echo: false` option disables the printing of code (only output is displayed).
