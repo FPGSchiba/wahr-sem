@@ -41,8 +41,6 @@ Unfall / Verhaftung -\> Gian
 
 ## Simulation
 
-
-
 ### Experiment
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
@@ -64,16 +62,9 @@ essen_e <- c(2, 1, 3)
 essen_sd <- c(2, 1, 1)
 trinken_e <- c(1, 2, 4)
 trinken_sd <- c(1, 1, 3)
-nsim <- 10
+nsim <- 100000
 abfall_produziert <- 0
-abfall_gewicht_pro_einheit <- 0.000015 # gweicht in tonnen
-
-calc_mu <- function(E, sd){
-  return (log(E) - sd^(2) / 2)
-}
-
-essen_mu <- calc_mu(essen_e, essen_sd)
-trinken_mu <- calc_mu(trinken_e, trinken_sd)
+abfall_gewicht_pro_einheit <- 0.000030 # gweicht in tonnen
 
 M <- matrix(NA, nrow = nsim, ncol = length(slots))
 
@@ -103,7 +94,7 @@ for (i in 1:nsim) {
   abfall_pro_slot <- c()
   current_time <- 2
   for (n in 1:length(besucher_pro_slot)) {
-    abfall_pro_slot[n] <- sum(rlnorm(besucher_pro_slot[n], essen_mu[current_time], essen_sd[current_time])) + sum(rlnorm(besucher_pro_slot[n], trinken_mu[current_time], trinken_sd[current_time]))
+    abfall_pro_slot[n] <- rnorm(1, mean = besucher_pro_slot[n]*essen_e[current_time], sd = sqrt(besucher_pro_slot[n]*essen_sd[current_time]^2))
     
     if (current_time == 3) {
     current_time <- 1}
@@ -123,21 +114,22 @@ df_long <- df %>%
 
 # Create the boxplot using ggplot2
 ggplot(df_long, aes(x = Slot, y = Abfall)) +
-  geom_boxplot() +
+  geom_boxplot(color="black",fill="lightblue") +
   scale_y_continuous(labels = label_comma()) +
-  labs(title = "Abfall pro Slot", x = "Zeit Slot", y = "Abfall") +
+  labs(x = "Zeit Slot", y = "Abfall") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-(mean(rowSums(M)))
+ggplot(df, aes(x=rowSums(M))) + 
+  geom_histogram(color="black", fill="lightblue") +
+  xlab("Abfall (T)") +
+  theme_minimal() +
+  ylab("Frequenz")
 
+(mean(rowSums(M)))
 ```
 
 You can add options to executable code like this
-
-#\| echo: false
-
-2 \* 2
 
 ```{r}
 
