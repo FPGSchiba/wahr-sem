@@ -1,13 +1,12 @@
 ---
-title: "Semester Arbeit: Schweizer Abstimmungen"
+title: "Quantitative Analyse der Abfallproduktion"
+subtitle: "Eine stochastische Modellierung unter Berücksichtigung von Wetterbedingungen und Besucherströmen"
 author: "Bratschi Jonas, Erhardt Jann, Gamper Gian"
 format: pdf
 editor: visual  
 ---
 
 ## Einleitung
-
-TBD: 
 
 Wie viel Abfall entsteht nach einem Stadtfest? (unentsorgt und entsorgt)
 
@@ -19,9 +18,9 @@ Wetter: Binomial
 
 Alter: Normal
 
-## Beschreibung
+In dieser Analyse simulieren wir den Abfall, der während eines Wochenend-Events produziert wird. Das Ziel ist es, das Abfallaufkommen in den verschiedenen Zeitslots zu verstehen und zu bewerten, wie sich unterschiedliche Faktoren wie Wetterbedingungen und Besucherzahlen auf die Abfallproduktion auswirken. Wir nutzen dazu statistische Methoden und die R-Bibliothek ggplot2, um die Ergebnisse zu visualisieren.
 
-TBD: 
+## Beschreibung
 
 Zeit-Slots: 2 am Freitag, 3 am Samstag, 2 am Sonntag
 
@@ -39,13 +38,17 @@ Essen: Lognormal in abhängigkeit zum Zeit-Slot
 
 Trinken: Lognormal in abhängigkeit zum Zeit-Slot
 
--\> Bei zu viel Trinken Abfall \* 2 (Abhängig vom Gewicht mit Normalverteilung abhängig von Geschlecht via Bernoulli)
+Der Simulationscode besteht aus mehreren Schritten:
 
-Unfall / Verhaftung -\> Gian
+1. Initialisierung der Parameter: Es werden verschiedene Parameter wie Zeitslots, Wetterwahrscheinlichkeiten, Besucherzahlen und Abfallproduktionsraten definiert.
+2. Simulationsschleife: Für nsim (100.000) Simulationen wird die Anzahl der Besucher und das Wetter für das Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
+3. Berechnung des Abfalls: Für jeden Zeitslot wird der erzeugte Abfall basierend auf den Besucherzahlen und den vorgegebenen Mittelwerten und Standardabweichungen für Essen und Trinken berechnet.
+4. Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschließend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
+
 
 ## Ergebnis
 
-TBD:
+Die Simulation zeigt, dass die Abfallproduktion stark variiert, abhängig von den Besucherzahlen und den Wetterbedingungen.
 
 ```{r}
 #| label: simulation
@@ -123,24 +126,34 @@ ggplot(df_long, aes(x = Slot, y = Abfall)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplot(df, aes(x=rowSums(M))) + 
-  geom_histogram(color="black", fill="lightblue") +
-  xlab("Abfall (T)") +
-  theme_minimal() +
-  ylab("Frequenz")
-
 calculated_mean <- mean(rowSums(M))
 ```
 
-You can add options to executable code like this
+Die erzeugten Boxplots visualisieren die Abfallmenge für jeden Zeitslot und verdeutlichen die Unterschiede zwischen den verschiedenen Zeitfenstern.
 
-Mean: `{r} calculated_mean`
+```{r}
+#| label: histogram
+#| echo: false
+#| warning: false
+ggplot(df, aes(x=rowSums(M))) + 
+  geom_histogram(color="black", fill="lightblue") +
+  scale_color_manual(name="Legende",values=c("red"),labels=c("mean")) +
+  xlab("Abfall (T)") +
+  theme_minimal() +
+  ylab("Frequenz") + 
+  geom_vline(xintercept = calculated_mean, color="red") +
+  annotate("text", x=calculated_mean + 3, y=9600, label="Mean", angle=0, color="red")
+```
+
+Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen hinweg. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa {{< meta title >}} Tonnen.
 
 ## Diskussion
-TBD: 
+
+Die Ergebnisse der Simulationen verdeutlichen, dass bestimmte Zeitslots mehr Abfall produzieren als andere, was auf die unterschiedlichen Besucherzahlen und Aktivitäten zurückzuführen ist. Die Wetterbedingungen haben einen signifikanten Einfluss auf die Besucherzahlen und somit auch auf die Abfallproduktion. Ein schlechtes Wetter reduziert die Besucherzahlen und somit auch die erzeugte Abfallmenge erheblich. Diese Erkenntnisse können für die Planung und das Abfallmanagement zukünftiger Events genutzt werden, um Ressourcen effizienter einzusetzen und die Umweltbelastung zu minimieren. 
 
 ## Fazit
-TBD: 
+
+Die durchgeführte Simulation liefert wertvolle Einblicke in die Abfallproduktion während eines Wochenend-Events. Durch die Berücksichtigung von Faktoren wie Wetter und Besucherzahlen konnten realistische Szenarien modelliert werden. Die Visualisierungen zeigen deutlich, wie sich die Abfallproduktion über die verschiedenen Zeitslots verteilt und welche Einflussfaktoren dabei eine Rolle spielen. Diese Informationen können zur Optimierung der Abfallentsorgung und zur besseren Planung von Events genutzt werden. Zukünftige Arbeiten könnten sich auf die Verfeinerung der Modelle und die Einbeziehung weiterer Variablen konzentrieren, um die Vorhersagen noch präziser zu machen.
 
 
 
