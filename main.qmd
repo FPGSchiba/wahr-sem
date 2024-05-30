@@ -2,7 +2,9 @@
 title: "Quantitative Analyse der Abfallproduktion"
 subtitle: "Eine stochastische Modellierung unter Berücksichtigung von Wetterbedingungen und Besucherströmen"
 author: "Bratschi Jonas, Erhardt Jann, Gamper Gian"
-format: pdf
+format: 
+  html:
+    code-fold: true
 editor: visual
 engine: knitr
 ---
@@ -40,20 +42,20 @@ abfall_gewicht_pro_einheit <- 0.000030 # gweicht in tonnen
 Angenomenn hier wurden einige Werte:
 
 -   Wetter wahrscheinlichkeiten
-    -   Gutes Wetter: `{r} wetter_probs[1]`
+    -   Gutes Wetter: `r round(wetter_probs[1],2)`
 -   Im ersten Slot des Tages werden weniger leute sein
 -   Essen Angenommene Werte (1. Slot, 2. Slot, 3. Slot) pro Tag
-    -   Erwartungswert: `2, 1, 3`
-    -   Standardabweichung: `2, 1, 1`
+    -   Erwartungswert: `r essen_e`
+    -   Standardabweichung: `r essen_sd`
 -   Trinken Angenommene Werte (1. Slot, 2. Slot, 3. Slot) pro Tag
-    -   Erwartungswert: `1, 2, 4`
-    -   Standardabweichung: `1, 1, 3`
--   Abfallgewicht Durschschnitt: 30g
+    -   Erwartungswert: `r trinken_e`
+    -   Standardabweichung: `r trinken_sd`
+-   Abfallgewicht Durschschnitt: `r format(abfall_gewicht_pro_einheit*1000000,scientific=FALSE)` g
 
 Der Simulationscode besteht aus mehreren Schritten:
 
 1.  Initialisierung der Parameter: Es werden verschiedene Parameter wie Zeitslots, Wetterwahrscheinlichkeiten, Besucherzahlen und Abfallproduktionsraten definiert.
-2.  Simulationsschleife: Für nsim (100'000) Simulationen wird die Anzahl der Besucher und das Wetter für das Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
+2.  Simulationsschleife: Für nsim = `r format(nsim,scientific = FALSE)` Simulationen wird die Anzahl der Besucher und das Wetter für das Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
 3.  Berechnung des Abfalls: Für jeden Zeitslot wird der erzeugte Abfall basierend auf den Besucherzahlen und den vorgegebenen Mittelwerten und Standardabweichungen für Essen und Trinken berechnet.
 4.  Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschließend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
 
@@ -65,6 +67,7 @@ Die Simulation zeigt, dass die Abfallproduktion stark variiert, abhängig von de
 #| label: simulation
 #| echo: false
 #| warning: false
+#| cache: true
 # Load required libraries
 library(ggplot2)
 library(tidyr)
@@ -121,19 +124,20 @@ df_long <- df %>%
 calculated_mean <- mean(rowSums(M))
 ```
 
-
 ```{r}
 #| label: figures
 #| echo: false
 #| warning: false
 #| layout-ncol: 2
+#| cache: true
 ggplot(df_long, aes(x = Slot, y = Abfall)) +
   geom_boxplot(color="black",fill="lightblue") +
   scale_y_continuous(labels = label_comma()) +
   labs(x = "Zeit Slot", y = "Abfall") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
+
+
 ggplot(df, aes(x=rowSums(M))) + 
   geom_histogram(color="black", fill="lightblue") +
   scale_color_manual(name="Legende",values=c("red"),labels=c("mean")) +
@@ -144,20 +148,18 @@ ggplot(df, aes(x=rowSums(M))) +
   annotate("text", x=calculated_mean + 4, y=9800, label="Mean", angle=0, color="red")
 ```
 
-
-::: {.grid}
-
-::: {.g-col-6}
-
+::: columns
+::: {.column width="45%"}
 Die erzeugten Boxplots visualisieren die Abfallmenge für jeden Zeitslot und verdeutlichen die Unterschiede zwischen den verschiedenen Zeitfenstern.
 :::
-  
-::: {.g-col-6}
 
-Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen hinweg. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa `{r} (calculated_mean)` Tonnen.
-
+::: {.column width="10%"}
+<!-- empty column to create gap -->
 :::
-  
+
+::: {.column width="45%"}
+Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen hinweg. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa `r round(calculated_mean,2)` Tonnen.
+:::
 :::
 
 ## Diskussion
