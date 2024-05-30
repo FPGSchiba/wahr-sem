@@ -3,26 +3,17 @@ title: "Quantitative Analyse der Abfallproduktion"
 subtitle: "Eine stochastische Modellierung unter Berücksichtigung von Wetterbedingungen und Besucherströmen"
 author: "Bratschi Jonas, Erhardt Jann, Gamper Gian"
 format: pdf
-editor: visual  
+editor: visual
+engine: knitr
 ---
 
 ## Einleitung
 
-Wie viel Abfall entsteht nach einem Stadtfest? (unentsorgt und entsorgt)
-
-Beispiel: Zürich fest
-
-Anzahl Personen: Poisson
-
-Wetter: Binomial
-
-Alter: Normal
-
-In dieser Analyse simulieren wir den Abfall, der während eines Wochenend-Events produziert wird. Das Ziel ist es, das Abfallaufkommen in den verschiedenen Zeitslots zu verstehen und zu bewerten, wie sich unterschiedliche Faktoren wie Wetterbedingungen und Besucherzahlen auf die Abfallproduktion auswirken. Wir nutzen dazu statistische Methoden und die R-Bibliothek ggplot2, um die Ergebnisse zu visualisieren.
+In dieser Analyse simulieren wir den Abfall, der während eines Zürich Festes produziert wird. Das Ziel ist es, das Abfallaufkommen in den verschiedenen Zeitslots zu verstehen und zu bewerten, wie sich unterschiedliche Faktoren wie Wetterbedingungen und Besucherzahlen auf die Abfallproduktion auswirken. Wir nutzen dazu die Poisson Verteilung, um die Anzhal der Personen zu Simulieren. Dazu die Binomial Verteilung, um das Wetter an allen Tagen zu simulieren. Als letztes die Lognormal Verteilung, um den Verbrauch (an Essen und Trinken) pro Besucher in abhängigkeit des Zeitslots zu simulieren. Für die Lognormal Verteilung wurde der Zentrale Grenzwertsatz angewant, um die Performance zu verbessern, somit wurde eine Normal Verteilung verwendet, um den Verbrauch pro Zeitslot zu berechnen.
 
 ## Beschreibung
 
-Zeit-Slots: 2 am Freitag, 3 am Samstag, 2 am Sonntag
+Folgende Zeit-Slots wurden genommen für das Zürich-fest: 2 am Freitag, 3 am Samstag, 2 am Sonntag
 
 Slot 1: Morgen-Mittag
 
@@ -30,21 +21,41 @@ Slot 2: Nachmittag
 
 Slot 3: Abend-Nacht
 
-Wetter: Bernoulli (schlecht, schön)
+```{r}
+#| label: variables
+#| echo: false
+#| cache: true
+wetter_probs <- c(2/3, 1/3)
+first_slot <- c(0.10, 0.20)
+rest_slots <- c(0.3, 0.4)
+bad_weather_factor <- 0.7
+essen_e <- c(2, 1, 3)
+essen_sd <- c(2, 1, 1)
+trinken_e <- c(1, 2, 4)
+trinken_sd <- c(1, 1, 3)
+nsim <- 100000
+abfall_gewicht_pro_einheit <- 0.000030 # gweicht in tonnen
+```
 
--\> Abhängig davon: Slots bleiben besucher
+Angenomenn hier wurden einige Werte:
 
-Essen: Lognormal in abhängigkeit zum Zeit-Slot
-
-Trinken: Lognormal in abhängigkeit zum Zeit-Slot
+-   Wetter wahrscheinlichkeiten
+    -   Gutes Wetter: `{r} wetter_probs[1]`
+-   Im ersten Slot des Tages werden weniger leute sein
+-   Essen Angenommene Werte (1. Slot, 2. Slot, 3. Slot) pro Tag
+    -   Erwartungswert: `2, 1, 3`
+    -   Standardabweichung: `2, 1, 1`
+-   Trinken Angenommene Werte (1. Slot, 2. Slot, 3. Slot) pro Tag
+    -   Erwartungswert: `1, 2, 4`
+    -   Standardabweichung: `1, 1, 3`
+-   Abfallgewicht Durschschnitt: 30g
 
 Der Simulationscode besteht aus mehreren Schritten:
 
-1. Initialisierung der Parameter: Es werden verschiedene Parameter wie Zeitslots, Wetterwahrscheinlichkeiten, Besucherzahlen und Abfallproduktionsraten definiert.
-2. Simulationsschleife: Für nsim (100.000) Simulationen wird die Anzahl der Besucher und das Wetter für das Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
-3. Berechnung des Abfalls: Für jeden Zeitslot wird der erzeugte Abfall basierend auf den Besucherzahlen und den vorgegebenen Mittelwerten und Standardabweichungen für Essen und Trinken berechnet.
-4. Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschließend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
-
+1.  Initialisierung der Parameter: Es werden verschiedene Parameter wie Zeitslots, Wetterwahrscheinlichkeiten, Besucherzahlen und Abfallproduktionsraten definiert.
+2.  Simulationsschleife: Für nsim (100'000) Simulationen wird die Anzahl der Besucher und das Wetter für das Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
+3.  Berechnung des Abfalls: Für jeden Zeitslot wird der erzeugte Abfall basierend auf den Besucherzahlen und den vorgegebenen Mittelwerten und Standardabweichungen für Essen und Trinken berechnet.
+4.  Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschließend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
 
 ## Ergebnis
 
@@ -61,17 +72,6 @@ library(dplyr)
 library(scales)
 
 slots <- c("FR Nachmittag", "FR Nacht", "SA Mittag", "SA Nachmittag", "SA Nacht", "SO Mittag", "SO Nachmittag")
-wetter_probs <- c(2/3, 1/3)
-first_slot <- c(0.10, 0.20)
-rest_slots <- c(0.3, 0.4)
-bad_weather_factor <- 0.7
-essen_e <- c(2, 1, 3)
-essen_sd <- c(2, 1, 1)
-trinken_e <- c(1, 2, 4)
-trinken_sd <- c(1, 1, 3)
-nsim <- 100000
-abfall_produziert <- 0
-abfall_gewicht_pro_einheit <- 0.000030 # gweicht in tonnen
 
 M <- matrix(NA, nrow = nsim, ncol = length(slots))
 
@@ -118,23 +118,22 @@ colnames(df) <- slots
 df_long <- df %>%
   pivot_longer(cols = everything(), names_to = "Slot", values_to = "Abfall")
 
-# Create the boxplot using ggplot2
+calculated_mean <- mean(rowSums(M))
+```
+
+
+```{r}
+#| label: figures
+#| echo: false
+#| warning: false
+#| layout-ncol: 2
 ggplot(df_long, aes(x = Slot, y = Abfall)) +
   geom_boxplot(color="black",fill="lightblue") +
   scale_y_continuous(labels = label_comma()) +
   labs(x = "Zeit Slot", y = "Abfall") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-calculated_mean <- mean(rowSums(M))
-```
-
-Die erzeugten Boxplots visualisieren die Abfallmenge für jeden Zeitslot und verdeutlichen die Unterschiede zwischen den verschiedenen Zeitfenstern.
-
-```{r}
-#| label: histogram
-#| echo: false
-#| warning: false
+  
 ggplot(df, aes(x=rowSums(M))) + 
   geom_histogram(color="black", fill="lightblue") +
   scale_color_manual(name="Legende",values=c("red"),labels=c("mean")) +
@@ -142,18 +141,29 @@ ggplot(df, aes(x=rowSums(M))) +
   theme_minimal() +
   ylab("Frequenz") + 
   geom_vline(xintercept = calculated_mean, color="red") +
-  annotate("text", x=calculated_mean + 3, y=9600, label="Mean", angle=0, color="red")
+  annotate("text", x=calculated_mean + 4, y=9800, label="Mean", angle=0, color="red")
 ```
 
-Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen hinweg. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa {{< meta title >}} Tonnen.
+
+::: {.grid}
+
+::: {.g-col-6}
+
+Die erzeugten Boxplots visualisieren die Abfallmenge für jeden Zeitslot und verdeutlichen die Unterschiede zwischen den verschiedenen Zeitfenstern.
+:::
+  
+::: {.g-col-6}
+
+Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen hinweg. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa `{r} (calculated_mean)` Tonnen.
+
+:::
+  
+:::
 
 ## Diskussion
 
-Die Ergebnisse der Simulationen verdeutlichen, dass bestimmte Zeitslots mehr Abfall produzieren als andere, was auf die unterschiedlichen Besucherzahlen und Aktivitäten zurückzuführen ist. Die Wetterbedingungen haben einen signifikanten Einfluss auf die Besucherzahlen und somit auch auf die Abfallproduktion. Ein schlechtes Wetter reduziert die Besucherzahlen und somit auch die erzeugte Abfallmenge erheblich. Diese Erkenntnisse können für die Planung und das Abfallmanagement zukünftiger Events genutzt werden, um Ressourcen effizienter einzusetzen und die Umweltbelastung zu minimieren. 
+Die Ergebnisse der Simulationen verdeutlichen, dass bestimmte Zeitslots mehr Abfall produzieren als andere, was auf die unterschiedlichen Besucherzahlen und Aktivitäten zurückzuführen ist. Die Wetterbedingungen haben einen signifikanten Einfluss auf die Besucherzahlen und somit auch auf die Abfallproduktion. Ein schlechtes Wetter reduziert die Besucherzahlen und somit auch die erzeugte Abfallmenge erheblich. Diese Erkenntnisse können für die Planung und das Abfallmanagement zukünftiger Events genutzt werden, um Ressourcen effizienter einzusetzen und die Umweltbelastung zu minimieren.
 
 ## Fazit
 
 Die durchgeführte Simulation liefert wertvolle Einblicke in die Abfallproduktion während eines Wochenend-Events. Durch die Berücksichtigung von Faktoren wie Wetter und Besucherzahlen konnten realistische Szenarien modelliert werden. Die Visualisierungen zeigen deutlich, wie sich die Abfallproduktion über die verschiedenen Zeitslots verteilt und welche Einflussfaktoren dabei eine Rolle spielen. Diese Informationen können zur Optimierung der Abfallentsorgung und zur besseren Planung von Events genutzt werden. Zukünftige Arbeiten könnten sich auf die Verfeinerung der Modelle und die Einbeziehung weiterer Variablen konzentrieren, um die Vorhersagen noch präziser zu machen.
-
-
-
