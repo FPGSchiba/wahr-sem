@@ -1,6 +1,6 @@
 ---
 title: "Quantitative Analyse der Abfallproduktion"
-subtitle: "Eine stochastische Modellierung unter Berücksichtigung von Wetterbedingungen und Besucherströmen"
+subtitle: "Eine stochastische Modellierung des 'Züri Fäscht'"
 author: "Bratschi Jonas, Erhardt Jann, Gamper Gian"
 format: 
   html:
@@ -67,11 +67,13 @@ trinken_standardabweichung <- trinken_sd
 # Erstellen der Tabelle
 tabelle <- data.frame(
   Zeitslot = slot,
-  Erwartungswert = essen_erwartungswert,
-  Standardabweichung = essen_standardabweichung,
-  Erwartungswert = trinken_erwartungswert,
-  Standardabweichung = trinken_standardabweichung
+  "Erwartungswert" = essen_erwartungswert,
+  "Standardabweichung" = essen_standardabweichung,
+  "Erwartungswert" = trinken_erwartungswert,
+  "Standardabweichung" = trinken_standardabweichung
 )
+
+colnames(tabelle) <- c("Zeitslot", "Erwartungswert", "Standardabweichung", "Erwartungswert", "Standardabweichung")
 
 # Anzeige der Tabelle mit Überschriften für die Kategorien
 kbl(tabelle) %>%
@@ -87,7 +89,7 @@ Der Simulationscode besteht aus mehreren Schritten:
 1.  Initialisierung der Parameter: Es werden verschiedene Parameter wie Zeitslots, Wetterwahrscheinlichkeiten, Besucherzahlen und Abfallproduktionsraten definiert.
 2.  Simulationsschleife: Für nsim = `r format(nsim,scientific = FALSE)` Simulationen wird die Anzahl der Besucher und das Wetter für den ganzen Event zufällig bestimmt. Basierend auf diesen Informationen wird die Anzahl der Besucher pro Zeitslot berechnet.
 3.  Berechnung des Abfalls: Für jeden Zeitslot wird der erzeugte Abfall basierend auf den Besucherzahlen und den vorgegebenen Mittelwerten und Standardabweichungen für Essen und Trinken berechnet.
-4.  Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschließend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
+4.  Speicherung und Visualisierung der Ergebnisse: Die Ergebnisse werden in einer Matrix gespeichert und anschliessend in ein DataFrame konvertiert. Mit ggplot2 werden Boxplots und Histogramme erstellt, um die Verteilung des Abfalls pro Zeitslot und die Gesamtabfallproduktion darzustellen.
 
 ## Ergebnis
 
@@ -188,7 +190,7 @@ Die erzeugten Boxplots visualisieren die Abfallmenge für jeden Zeitslot und ver
 :::
 
 ::: {.column width="45%"}
-Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa `r round(calculated_mean,0)` Tonnen.
+Das Histogramm zeigt die Verteilung der Gesamtabfallproduktion über alle Simulationen. Der berechnete Mittelwert der Gesamtabfallproduktion liegt bei etwa `r round(calculated_mean, 0)` Tonnen.
 :::
 :::
 
@@ -200,4 +202,4 @@ Die Ergebnisse der Simulationen verdeutlichen, dass in bestimmte Zeitslots deutl
 
 Die durchgeführte Simulation bietet wertvolle Erkenntnisse über die Abfallproduktion während eines Wochenend-Events. Durch die Einbeziehung von Faktoren wie Wetter und Besucherzahlen konnten realistische Szenarien modelliert werden. Die Visualisierungen verdeutlichen, wie sich die Abfallproduktion über die verschiedenen Zeitslots verteilt und welche Einflussfaktoren dabei eine Rolle spielen. Diese Informationen können zur Optimierung der Abfallentsorgung und zur besseren Planung von Events genutzt werden. Zukünftige Arbeiten könnten sich auf die Verfeinerung der Modelle und die Einbeziehung weiterer Variablen konzentrieren, um die Vorhersagen noch präziser zu gestalten.
 
-Abschließend ist noch anzumerken, wie bemerkenswert es ist, dass wir mit vergleichsweise wenigen Variablen eine äußerst eindrucksvolle und präzise Simulation erreicht haben.
+Abschliessend ist noch anzumerken, wie bemerkenswert es ist, dass wir mit vergleichsweise wenigen Variablen eine äusserst eindrucksvolle und präzise Simulation erreicht haben.
